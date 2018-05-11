@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Yanz.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "UserList";
+}
+
+
+<h2>List of Users</h2>
+<table class="table">
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>
+                <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-userid="@user.Id">Access rights</a>
+            </td>
+        </tr>
+    }
+</table>
+
