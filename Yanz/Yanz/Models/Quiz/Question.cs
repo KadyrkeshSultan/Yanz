@@ -2,7 +2,7 @@
 {
     public class Question
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
 
         #region Свойства
         /// <summary>
@@ -52,7 +52,7 @@
 
         #region Связи
         public QuestionSet QuestionSet { get; set; }
-        public System.Guid QuestionSetId { get; set; }
+        public string QuestionSetId { get; set; }
 
         /// <summary>
         /// Варианты ответа

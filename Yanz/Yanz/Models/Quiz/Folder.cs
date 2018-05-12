@@ -2,11 +2,11 @@
 {
     public class Folder
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
         public string Title { get; set; }
 
         #region Связи
-        public System.Guid? ParentId { get; set; }
+        public string ParentId { get; set; }
 
         //TODO: Нужен по типу User Identity
         #endregion

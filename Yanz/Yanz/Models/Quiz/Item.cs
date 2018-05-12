@@ -2,7 +2,7 @@
 {
     public class Item
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Например Set или Folder

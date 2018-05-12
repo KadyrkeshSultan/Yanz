@@ -2,7 +2,7 @@
 {
     public class FolderView
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
         public string Title { get; set; }
         public System.Collections.Generic.List<Breadcrumb> Breadcrumbs { get; set; }
         public System.Collections.Generic.List<Item> Items { get; set; }

@@ -4,7 +4,7 @@ namespace Yanz.Models.Quiz
 {
     public class QuestionSetView
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Дата создания

@@ -2,7 +2,7 @@
 {
     public class QuestionSet
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Дата создания
@@ -19,7 +19,7 @@
 
         #region Связи
         public Folder Folder { get; set; }
-        public System.Guid? FolderId { get; set; }
+        public string FolderId { get; set; }
         public System.Collections.Generic.List<Question> Questions { get; set; }
         #endregion
     }

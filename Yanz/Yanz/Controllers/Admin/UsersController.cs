@@ -29,7 +29,6 @@ namespace Yanz.Controllers.Admin
         {
             if(ModelState.IsValid)
             {
-                //TODO: Role
                 if (model.Role == "admin")
                     return View(model);
                 if (await roleManager.FindByNameAsync(model.Role) == null)

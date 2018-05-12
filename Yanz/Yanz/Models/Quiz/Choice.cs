@@ -2,7 +2,7 @@
 {
     public class Choice
     {
-        public System.Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Ссылка на изображение
@@ -23,7 +23,7 @@
 
         #region Связи
         public Question Question { get; set; }
-        public System.Guid QuestionId { get; set; }
+        public string QuestionId { get; set; }
         #endregion
     }
 }
