@@ -9,15 +9,12 @@
         /// </summary>
         public System.DateTime Created { get; set; }
 
-        //TODO: Возможно надо использовать User от Identity, а owner в ViewModel
-        /// <summary>
-        /// Владелец
-        /// </summary>
-        public string Owner { get; set; }
         public string Title { get; set; }
 
 
         #region Связи
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
         public Folder Folder { get; set; }
         public string FolderId { get; set; }
         public System.Collections.Generic.List<Question> Questions { get; set; }

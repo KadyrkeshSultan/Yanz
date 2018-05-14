@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+
+}
+    <p>
+        <label>Title</label><br />
+        <input id="title" type="text" name="Title" />
+        <br />
+        <label>ParentId</label><br />
+        <input id="parentId" name="ParentId" />
+    </p>
+<button class="btn" onclick="createFolder()">Create</button>
+
+<br />
+<p>
+    Rename
+    <br />
+    <label>Title</label><br />
+    <input id="title2" type="text" name="Title" />
+    <br />
+    <label>Folder Id</label><br />
+    <input id="folderId" name="FolderId" />
+</p>
+<br />
+<button class="btn" onclick="renameFolder()">Rename</button>
+
+<br />
+<p>
+    Delete
+    <br />
+    <label>Folder Id</label><br />
+    <input id="folderIdDelete" name="FolderId" />
+</p>
+<br />
+
+<p>
+    Move
+    <br />
+    <label>ID folder</label><br />
+    <input id="moveFolderId" type="text" name="Id" />
+    <br />
+    <label>ParentFolderId</label><br />
+    <input id="parentFolderId" name="ParentId" />
+</p>
+<br />
+<button class="btn" onclick="moveFolder()">Move</button>
+<script>
+    function createFolder() {
+        var title = $("#title").val();
+        var parentId = $("#parentId").val();
+        var folder = { Title: title, ParentId: parentId };
+        $.ajax({
+            url: '/api/folders/',
+            type: 'POST',
+            data: JSON.stringify(folder),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Create Folder');
+            }
+        });
+    }
+
+    function renameFolder() {
+        var title = $("#title2").val();
+        var folderId = $("#folderId").val();
+        var folder = { Title: title };
+        $.ajax({
+            url: '/api/folders/' + folderId,
+            type: 'PATCH',
+            data: JSON.stringify(folder),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Rename Folder');
+            }
+        });
+    }
+
+    function deleteFolder() {
+        var folderId = $("#folderIdDelete").val();
+        $.ajax({
+            url: '/api/folders/' + folderId,
+            type: 'DELETE',
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Delete Folder');
+            }
+        });
+    }
+
+    function moveFolder() {
+        var moveFolderId = $("#moveFolderId").val();
+        var parentFolderId = $("#parentFolderId").val();
+        var folder = { ParentId: parentFolderId };
+        $.ajax({
+            url: '/api/folders/' + moveFolderId,
+            type: 'PATCH',
+            data: JSON.stringify(folder),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Move Folder');
+            }
+        });
+    }
+</script>

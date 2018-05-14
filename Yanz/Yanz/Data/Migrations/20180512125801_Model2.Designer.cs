@@ -11,9 +11,10 @@ using Yanz.Data;
 namespace Yanz.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180512125801_Model2")]
+    partial class Model2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,8 +245,6 @@ namespace Yanz.Data.Migrations
 
                     b.Property<string>("QuestionSetId");
 
-                    b.Property<string>("SessionId");
-
                     b.Property<string>("Title");
 
                     b.Property<int>("Weight");
@@ -253,8 +252,6 @@ namespace Yanz.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionSetId");
-
-                    b.HasIndex("SessionId");
 
                     b.ToTable("Questions");
                 });
@@ -308,11 +305,15 @@ namespace Yanz.Data.Migrations
 
                     b.Property<string>("PlatformOnly");
 
+                    b.Property<string>("QuestionSetId");
+
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("QuestionSetId");
 
                     b.ToTable("Sessions");
                 });
@@ -381,10 +382,6 @@ namespace Yanz.Data.Migrations
                     b.HasOne("Yanz.Models.Quiz.QuestionSet", "QuestionSet")
                         .WithMany("Questions")
                         .HasForeignKey("QuestionSetId");
-
-                    b.HasOne("Yanz.Models.Quiz.Session", "Session")
-                        .WithMany("Questions")
-                        .HasForeignKey("SessionId");
                 });
 
             modelBuilder.Entity("Yanz.Models.Quiz.QuestionSet", b =>
@@ -403,6 +400,10 @@ namespace Yanz.Data.Migrations
                     b.HasOne("Yanz.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Yanz.Models.Quiz.QuestionSet", "QuestionSet")
+                        .WithMany("Sessions")
+                        .HasForeignKey("QuestionSetId");
                 });
 #pragma warning restore 612, 618
         }

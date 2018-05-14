@@ -8,7 +8,8 @@
         #region Связи
         public string ParentId { get; set; }
 
-        //TODO: Нужен по типу User Identity
+        public ApplicationUser ApplicationUser { get; set; }
+        public string ApplicationUserId { get; set; }
         #endregion
     }
 }

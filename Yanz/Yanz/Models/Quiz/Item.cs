@@ -12,5 +12,21 @@
         public int? QuestionsCount { get; set; }
 
         public string Title { get; set; }
+
+        public Item(Folder folder)
+        {
+            Id = folder.Id;
+            Kind = "folder";
+            QuestionsCount = null;
+            Title = folder.Title;
+        }
+
+        public Item(QuestionSet set)
+        {
+            Id = set.Id;
+            Kind = "set";
+            QuestionsCount = set.Questions.Count;
+            Title = set.Title;
+        }
     }
 }

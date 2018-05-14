@@ -54,6 +54,9 @@
         public QuestionSet QuestionSet { get; set; }
         public string QuestionSetId { get; set; }
 
+        public Session Session { get; set; }
+        public string SessionId { get; set; }
+
         /// <summary>
         /// Варианты ответа
         /// </summary>

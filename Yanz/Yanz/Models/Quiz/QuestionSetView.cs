@@ -25,8 +25,7 @@ namespace Yanz.Models.Quiz
         public QuestionSetView(QuestionSet set)
         {
             Id = set.Id;
-            //TODO : Здесь должно быть типа User.Email
-            Owner = set.Owner;
+            Owner = set.ApplicationUser.Email;
             Title = set.Title;
             Created = set.Created;
             Questions = GetQuestionViews(set.Questions);
