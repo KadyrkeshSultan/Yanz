@@ -14,16 +14,19 @@
 
 <br />
 <p>
-    Rename
+    Rename and Move
     <br />
     <label>Title</label><br />
     <input id="title2" type="text" name="Title" />
     <br />
     <label>Folder Id</label><br />
     <input id="folderId" name="FolderId" />
+    <br />
+    <label>Parent Id</label><br />
+    <input id="parentRId" name="ParentId" />
 </p>
 <br />
-<button class="btn" onclick="renameFolder()">Rename</button>
+<button class="btn" onclick="renameFolder()">Rename & Move</button>
 
 <br />
 <p>
@@ -33,7 +36,8 @@
     <input id="folderIdDelete" name="FolderId" />
 </p>
 <br />
-
+<button class="btn" onclick="deleteFolder()">Delete</button>
+<br />
 <p>
     Move
     <br />
@@ -64,14 +68,15 @@
     function renameFolder() {
         var title = $("#title2").val();
         var folderId = $("#folderId").val();
-        var folder = { Title: title };
+        var parentRId = $("#parentRId").val();
+        var folder = { Title: title, ParentId: parentRId };
         $.ajax({
             url: '/api/folders/' + folderId,
             type: 'PATCH',
             data: JSON.stringify(folder),
             contentType: "application/json;charset=utf-8",
             success: function (data) {
-                alert('Rename Folder');
+                alert('Rename & Move Folder');
             }
         });
     }

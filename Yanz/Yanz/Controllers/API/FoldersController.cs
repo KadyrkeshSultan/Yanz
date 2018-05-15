@@ -34,33 +34,30 @@ namespace Yanz.Controllers.API
             return Ok(GetItems(null));
         }
 
-        //TODO: придется требовать передачи и parentId, Title
+
+        //TODO: поискать решение с partial Patch
         [HttpPatch("{id}")]
         [Authorize]
         public async Task<IActionResult> Patch(string Id, [FromBody]FolderView folderView)
         {
-            if (folderView == null)
-                return BadRequest();
-            var folder = await db.Folder.FirstOrDefaultAsync(f => f.Id == Id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var folders = GetFolders();
+            var folder = folders.FirstOrDefault(f => f.Id == Id);
+
             if (folder == null)
-                return BadRequest();
+                return NotFound(Id);
+            var parentId = folders.FirstOrDefault(f => f.Id == folderView.ParentId)?.Id;
 
-            //Если перемещяем в root(null)
-            if (folderView.ParentId == "root")
-                folder.ParentId = null;
-            else
-            {
-                //Если это не root, проверяем есть ли нужная папка
-                if (await db.Folder.FirstOrDefaultAsync(f => f.Id == folderView.ParentId) == null)
-                    return BadRequest();
-            }
+            if (folderView.ParentId != "root" && parentId == null)
+                return BadRequest($"Not exist folderId = {folderView.ParentId}");
 
-            if (folderView.Title?.Length < 1)
-                return BadRequest();
+            if (IsSubFolder(Id, folderView.ParentId))
+                return BadRequest($"Folder {folderView.ParentId} is sub folder {Id}");
 
             folder.Title = folderView.Title;
-            folder.ParentId = folderView.ParentId;
-            db.Folder.Update(folder);
+            folder.ParentId = parentId;
+            db.Folders.Update(folder);
             await db.SaveChangesAsync();
             FolderView view = new FolderView(folder, GetBreadcrumbs(folder.ParentId), GetItems(folder.Id));
             return Ok(view);
@@ -68,11 +65,12 @@ namespace Yanz.Controllers.API
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> Get(string Id)
+        public IActionResult Get(string Id)
         {
-            var folder = await db.Folder.FirstOrDefaultAsync(f => f.Id == Id);
+            var folders = GetFolders();
+            var folder = folders.FirstOrDefault(f => f.Id == Id);
             if (folder == null)
-                return NotFound();
+                return NotFound(Id);
 
             FolderView view = new FolderView(folder, GetBreadcrumbs(folder.ParentId), GetItems(folder.Id));
             return Ok(view);
@@ -83,18 +81,19 @@ namespace Yanz.Controllers.API
         [Authorize]
         public async Task<IActionResult> Post([FromBody]FolderView folder)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var user = await userManager.GetUserAsync(User);
-            if (folder == null || folder.Title.Length < 1)
-                return BadRequest();
 
             var nFolder = new Folder()
             {
                 Id = Guid.NewGuid().ToString(),
                 Title = folder.Title,
                 ApplicationUser = user,
-                ParentId = db.Folder.FirstOrDefault(f => f.Id == folder.ParentId)?.Id
+                ParentId = GetFolders().FirstOrDefault(f => f.Id == folder.ParentId)?.Id
             };
-            await db.Folder.AddAsync(nFolder);
+            await db.Folders.AddAsync(nFolder);
             await db.SaveChangesAsync();
             FolderView view = new FolderView(nFolder, GetBreadcrumbs(nFolder.ParentId), GetItems(nFolder.Id));
             return Ok(view);
@@ -104,18 +103,20 @@ namespace Yanz.Controllers.API
         [Authorize]
         public async Task<IActionResult> Delete(string Id)
         {
-            var folder = await db.Folder.FirstOrDefaultAsync(f => f.Id == Id);
+            var folders = GetFolders();
+            var folder = folders.FirstOrDefault(f => f.Id == Id);
             if (folder == null)
-                return BadRequest();
+                return BadRequest(Id);
             var listFoldersDelete = new List<Folder>();
             var listQstSetsDelete = new List<QuestionSet>();
 
-            GetChildFolders(folder.Id, listFoldersDelete, listQstSetsDelete);
+            //Рекурсивная функция, обход каталога
+            GetChildItems(folder.Id, listFoldersDelete, listQstSetsDelete);
 
             db.QuestionSets.RemoveRange(listQstSetsDelete);
-            db.Folder.RemoveRange(listFoldersDelete);
+            db.Folders.RemoveRange(listFoldersDelete);
 
-            db.Folder.Remove(folder);
+            db.Folders.Remove(folder);
             await db.SaveChangesAsync();
             return new StatusCodeResult(204);
         }
@@ -126,53 +127,113 @@ namespace Yanz.Controllers.API
         /// <param name="folderId">ID папки, из которой нужно получить папки, группы</param>
         /// <param name="foldersDelete">Список папок</param>
         /// <param name="qstSetDelete">Список групп вопросов</param>
-        private void GetChildFolders(string folderId, List<Folder> foldersDelete, List<QuestionSet> qstSetDelete)
+        private void GetChildItems(string folderId, List<Folder> foldersDelete, List<QuestionSet> qstSetDelete)
         {
-            var folders = db.Folder.Where(f => f.ParentId == folderId).ToList();
+            var folders = GetFolders().Where(f => f.ParentId == folderId).ToList();
 
             if (folders == null)
             {
-                qstSetDelete.AddRange(db.QuestionSets.Where(q => q.FolderId == folderId).ToList());
+                qstSetDelete.AddRange(GetQuestionSets().Where(q => q.FolderId == folderId));
                 return;
             }
             foldersDelete.AddRange(folders);
             foreach (var folder in folders)
             {
-                qstSetDelete.AddRange(db.QuestionSets.Where(q => q.FolderId == folderId).ToList());
-                GetChildFolders(folder.Id, foldersDelete, qstSetDelete);
+                qstSetDelete.AddRange(GetQuestionSets().Where(q => q.FolderId == folderId));
+                GetChildItems(folder.Id, foldersDelete, qstSetDelete);
             }
         }
 
-        private List<Item> GetItems(string Id)
+        /// <summary>
+        /// Получаем все элементы(набор вопросов, подпапки) в папке
+        /// </summary>
+        /// <param name="folderId">ID папки</param>
+        /// <returns></returns>
+        private List<Item> GetItems(string folderId)
         {
             var items = new List<Item>();
-            var listFolders = db.Folder.Where(f => f.ParentId == Id).OrderBy(f => f.Title).ToList();
-            foreach(var folder in listFolders)
+            var listFolders = GetFolders()
+                .Where(f => f.ParentId == folderId)
+                .OrderBy(f => f.Title)
+                .ToList();
+            foreach (var folder in listFolders)
                 items.Add(new Item(folder));
 
-            var listQstSets = db.QuestionSets
-                .Include(q => q.Questions)
-                .Where(q => q.FolderId == Id)
-                .OrderBy(q => q.Title).ToList();
+            var listQstSets = GetQuestionSets().Where(q => q.FolderId == folderId)
+                .OrderBy(q => q.Title)
+                .ToList();
 
             foreach (var qstSet in listQstSets)
                 items.Add(new Item(qstSet));
 
             return items;
         }
-        private List<Breadcrumb> GetBreadcrumbs(string parentId)
+
+        /// <summary>
+        /// Получаем путь вложенности папки до корня(null)
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        private List<Breadcrumb> GetBreadcrumbs(string parentFolderId)
         {
-            if (parentId == null)
+            if (parentFolderId == null)
                 return new List<Breadcrumb>();
             var breadcrumbs = new List<Breadcrumb>();
-            Folder folder = db.Folder.FirstOrDefault(f => f.Id == parentId);
+            Folder folder = GetFolders().FirstOrDefault(f => f.Id == parentFolderId);
             while (folder != null)
             {
                 breadcrumbs.Add(new Breadcrumb(folder));
-                folder = db.Folder.FirstOrDefault(f => f.Id == folder.ParentId);
+                folder = GetFolders().FirstOrDefault(f => f.Id == folder.ParentId);
             }
             breadcrumbs.Reverse();
             return breadcrumbs;
+        }
+
+        /// <summary>
+        /// Является ли папка в которую надо переместить - подпапкой
+        /// </summary>
+        /// <param name="folderId">Id папки которую нужно переместить</param>
+        /// <param name="moveFolderId">Id папки в которую нужно переместить</param>
+        /// <returns></returns>
+        private bool IsSubFolder(string folderId, string moveFolderId)
+        {
+            var subFolders = new List<Folder>();
+            GetSubFolders(folderId, subFolders);
+            foreach (var folder in subFolders)
+                if (folder.Id == moveFolderId)
+                    return true;
+            return false;
+        }
+
+        private void GetSubFolders(string folderId, List<Folder> subFolders)
+        {
+            var folders = GetFolders().Where(f => f.ParentId == folderId).ToList();
+            subFolders.AddRange(folders);
+            foreach (var folder in folders)
+                GetSubFolders(folder.Id, subFolders);
+        }
+
+        /// <summary>
+        /// Получить папки текущего пользователя
+        /// </summary>
+        /// <returns></returns>
+        private List<Folder> GetFolders()
+        {
+            var userId = userManager.GetUserId(User);
+            return db.Folders.Where(f => f.ApplicationUserId == userId).ToList();
+        }
+
+        /// <summary>
+        /// Получить набор вопросов текущего пользователя
+        /// </summary>
+        /// <returns>QuestionSets вместе questions</returns>
+        private List<QuestionSet> GetQuestionSets()
+        {
+            var userId = userManager.GetUserId(User);
+            return db.QuestionSets
+                .Include(q => q.Questions)
+                .Where(q => q.ApplicationUserId == userId)
+                .ToList();
         }
     }
 }

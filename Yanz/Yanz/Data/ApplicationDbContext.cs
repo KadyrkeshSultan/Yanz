@@ -12,7 +12,7 @@ namespace Yanz.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Question> Questions { get; set; }
-        public DbSet<Folder> Folder { get; set; }
+        public DbSet<Folder> Folders { get; set; }
         public DbSet<QuestionSet> QuestionSets { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Choice> Choices { get; set; }
