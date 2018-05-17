@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Yanz.Models;
 using Yanz.Models.Quiz;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,11 +15,11 @@ namespace Yanz.Data
             db = dbContext;
         }
 
-        public List<Folder> GetRootFolder(string userId)
+        public async Task<List<Folder>> GetRootFolderAsync(string userId)
         {
-            return db.Folders
+            return await db.Folders
                 .Where(f => f.ParentId == null && f.ApplicationUserId == userId)
-                .ToList();
+                .ToListAsync();
         }
 
         /// <summary>
@@ -30,9 +27,9 @@ namespace Yanz.Data
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public List<Folder> GetFolders(string userId)
+        public async Task<List<Folder>> GetFoldersAsync(string userId)
         {
-            return db.Folders.Where(f => f.ApplicationUserId == userId).ToList();
+            return await db.Folders.Where(f => f.ApplicationUserId == userId).ToListAsync();
         }
 
         /// <summary>
@@ -41,9 +38,9 @@ namespace Yanz.Data
         /// <param name="userId"></param>
         /// <param name="folderId"></param>
         /// <returns></returns>
-        public Folder GetFolder(string userId, string folderId)
+        public async Task<Folder> GetFolderAsync(string userId, string folderId)
         {
-            return db.Folders.FirstOrDefault(f => f.ApplicationUserId == userId && f.Id == folderId);
+            return await db.Folders.FirstOrDefaultAsync(f => f.ApplicationUserId == userId && f.Id == folderId);
         }
         
         /// <summary>
@@ -64,18 +61,17 @@ namespace Yanz.Data
         public async Task AddAsync(Folder folder)
         {
             await db.Folders.AddAsync(folder);
-            await db.SaveChangesAsync();
         }
 
         public async Task<string> MoveAsync(string userId, string folderId, string moveFolderId)
         {
-            var folder = GetFolder(userId, folderId);
+            var folder = await GetFolderAsync(userId, folderId);
             if (folder == null)
                 return $"Not found folderId = {folderId}";
-            var parentFolder = GetFolder(userId, moveFolderId);
+            var parentFolder = await GetFolderAsync(userId, moveFolderId);
             if (moveFolderId != "root" && parentFolder == null)
                 return $"Not found moveFolderId = {moveFolderId}";
-            if (IsSubFolder(userId, folderId, moveFolderId))
+            if (await IsSubFolderAsync(userId, folderId, moveFolderId))
                 return $"Folder {moveFolderId} is subfolder {folderId}";
 
             folder.ParentId = parentFolder?.Id;
@@ -83,16 +79,15 @@ namespace Yanz.Data
             return null;
         }
 
-        public async Task<string> Rename(string userId, string folderId, string newTitle)
+        public async Task<string> RenameAsync(string userId, string folderId, string newTitle)
         {
-            var folder = GetFolder(userId, folderId);
+            var folder = await GetFolderAsync(userId, folderId);
             if (folder == null)
                 return $"Not found folderId = {folderId}";
             if (newTitle.Length < 1)
                 return $"Title length is less than 1";
             folder.Title = newTitle;
             db.Folders.Update(folder);
-            await db.SaveChangesAsync();
             return null;
         }
 
@@ -105,18 +100,22 @@ namespace Yanz.Data
         /// <returns>False если папка не нашлась</returns>
         public async Task<bool> RemoveAsync(string userId, string folderId)
         {
-            var folder = GetFolder(userId, folderId);
+            var folder = await GetFolderAsync(userId, folderId);
             if (folder == null)
                 return false;
             var childFolders = new List<Folder>();
 
-            GetChildFolder(userId, folderId, childFolders);
+            await GetChildFolder(userId, folderId, childFolders);
 
             //Каскадное удаление QuestionSets. Подробнее в методе OnModelCreating
             db.Folders.RemoveRange(childFolders);
             db.Folders.Remove(folder);
-            await db.SaveChangesAsync();
             return true;
+        }
+
+        public async Task SaveAsync()
+        {
+            await db.SaveChangesAsync();
         }
 
         /// <summary>
@@ -125,12 +124,12 @@ namespace Yanz.Data
         /// <param name="userId"></param>
         /// <param name="folderId"></param>
         /// <param name="childFolders">Список который содержит подпапки</param>
-        private void GetChildFolder(string userId, string folderId, List<Folder> childFolders)
+        private async Task GetChildFolder(string userId, string folderId, List<Folder> childFolders)
         {
-            var folders = GetFolders(userId).Where(f => f.ParentId == folderId).ToList();
+            var folders = (await GetFoldersAsync(userId)).Where(f => f.ParentId == folderId).ToList();
             childFolders.AddRange(folders);
             foreach (var folder in folders)
-                GetChildFolder(userId, folder.Id, childFolders);
+                await GetChildFolder(userId, folder.Id, childFolders);
         }
 
         /// <summary>
@@ -140,13 +139,13 @@ namespace Yanz.Data
         /// <param name="folderId">Id папки которую нужно переместить</param>
         /// <param name="moveFolderId">Id папки в которую нужно переместить</param>
         /// <returns></returns>
-        private bool IsSubFolder(string userId, string folderId, string moveFolderId)
+        private async Task<bool> IsSubFolderAsync(string userId, string folderId, string moveFolderId)
         {
             //Если папка в которую нужно переместить, является корнем
             if (moveFolderId == null)
                 return false;
             var subFolders = new List<Folder>();
-            GetChildFolder(userId, folderId, subFolders);
+            await GetChildFolder(userId, folderId, subFolders);
             foreach (var folder in subFolders)
                 if (folder.Id == moveFolderId)
                     return true;

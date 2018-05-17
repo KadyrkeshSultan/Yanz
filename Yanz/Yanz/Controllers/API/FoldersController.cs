@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Yanz.Data;
 using Yanz.Models;
 using Yanz.Models.Quiz;
@@ -30,9 +27,9 @@ namespace Yanz.Controllers.API
         [HttpGet]
         [Authorize]
         [Route("root")]
-        public IActionResult Root()
+        public async Task<IActionResult> Root()
         {
-            return Ok(GetItems(null));
+            return Ok(await GetItemsAsync(null));
         }
 
 
@@ -46,35 +43,34 @@ namespace Yanz.Controllers.API
 
             var userId = userManager.GetUserId(User);
 
-            var folder = db.GetFolder(userId, Id);
+            Folder folder = await db.GetFolderAsync(userId, Id);
 
             if (folder == null)
                 return NotFound(Id);
 
-            //TODO: не обновлять пока, пока оба метода не сработают
-            var moveResult = await db.MoveAsync(userId, Id, folderView.ParentId);
+            string moveResult = await db.MoveAsync(userId, Id, folderView.ParentId);
             if (moveResult != null)
                 return BadRequest(moveResult);
 
-            var renameResult = await db.Rename(userId, Id, folderView.Title);
-
+            string renameResult = await db.RenameAsync(userId, Id, folderView.Title);
             if (renameResult != null)
                 return BadRequest(renameResult);
-            
-            FolderView view = new FolderView(folder, GetBreadcrumbs(folder.Id), GetItems(folder.Id));
+
+            await db.SaveAsync();
+            FolderView view = new FolderView(folder, await GetBreadcrumbsAsync(folder.Id), await GetItemsAsync(folder.Id));
             return Ok(view);
         }
 
         [HttpGet("{id}")]
         [Authorize]
-        public IActionResult Get(string Id)
+        public async Task<IActionResult> Get(string Id)
         {
             var userId = userManager.GetUserId(User);
-            var folder = db.GetFolder(userId, Id);
+            Folder folder = await db.GetFolderAsync(userId, Id);
             if (folder == null)
                 return NotFound(Id);
 
-            FolderView view = new FolderView(folder, GetBreadcrumbs(folder.Id), GetItems(folder.Id));
+            FolderView view = new FolderView(folder,await GetBreadcrumbsAsync(folder.Id), await GetItemsAsync(folder.Id));
             return Ok(view);
         }
 
@@ -87,12 +83,13 @@ namespace Yanz.Controllers.API
                 return BadRequest(ModelState);
 
             var userId = userManager.GetUserId(User);
-            var parentId = db.GetFolder(userId, folder.ParentId)?.Id;
+            var parentId = (await db.GetFolderAsync(userId, folder.ParentId))?.Id;
 
             var nFolder = new Folder(folder.Title, userId, parentId);
             await db.AddAsync(nFolder);
-            
-            FolderView view = new FolderView(nFolder, GetBreadcrumbs(nFolder.Id), GetItems(nFolder.Id));
+            await db.SaveAsync();
+
+            FolderView view = new FolderView(nFolder, await GetBreadcrumbsAsync(nFolder.Id), await GetItemsAsync(nFolder.Id));
             return Ok(view);
         }
 
@@ -104,7 +101,7 @@ namespace Yanz.Controllers.API
             var onDelete = await db.RemoveAsync(userId, Id);
             if (!onDelete)
                 return BadRequest(Id);
-            
+            await db.SaveAsync();
             return new StatusCodeResult(204);
         }
 
@@ -113,11 +110,11 @@ namespace Yanz.Controllers.API
         /// </summary>
         /// <param name="folderId">ID папки</param>
         /// <returns></returns>
-        private List<Item> GetItems(string folderId)
+        private async Task<List<Item>> GetItemsAsync(string folderId)
         {
             var userId = userManager.GetUserId(User);
             var items = new List<Item>();
-            var listFolders = db.GetFolders(userId)
+            var listFolders = (await db.GetFoldersAsync(userId))
                 .Where(f => f.ParentId == folderId)
                 .OrderBy(f => f.Title)
                 .ToList();
@@ -138,19 +135,19 @@ namespace Yanz.Controllers.API
         /// </summary>
         /// <param name="folderId"></param>
         /// <returns></returns>
-        private List<Breadcrumb> GetBreadcrumbs(string folderId)
+        private async Task<List<Breadcrumb>> GetBreadcrumbsAsync(string folderId)
         {
             if (folderId == null)
                 return new List<Breadcrumb>();
 
             var userId = userManager.GetUserId(User);
             var breadcrumbs = new List<Breadcrumb>();
-            Folder folder = db.GetFolder(userId, folderId);
-            Folder parentFolder = db.GetFolder(userId, folder.ParentId);
+            Folder folder = await db.GetFolderAsync(userId, folderId);
+            Folder parentFolder = await db.GetFolderAsync(userId, folder.ParentId);
             while (parentFolder != null)
             {
                 breadcrumbs.Add(new Breadcrumb(parentFolder));
-                parentFolder = db.GetFolder(userId, parentFolder.ParentId);
+                parentFolder = await db.GetFolderAsync(userId, parentFolder.ParentId);
             }
             breadcrumbs.Reverse();
             return breadcrumbs;
