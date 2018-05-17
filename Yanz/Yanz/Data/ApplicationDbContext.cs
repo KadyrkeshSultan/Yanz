@@ -25,6 +25,10 @@ namespace Yanz.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<QuestionSet>()
+                .HasOne(q => q.Folder)
+                .WithMany(f => f.QuestionSets)
+                .OnDelete(DeleteBehavior.Cascade);
             //builder.Ignore<Item>();
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

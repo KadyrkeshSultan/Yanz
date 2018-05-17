@@ -42,7 +42,7 @@ namespace Yanz
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-
+            services.AddScoped<FolderContext>();
             services.AddMvc();
         }
 
