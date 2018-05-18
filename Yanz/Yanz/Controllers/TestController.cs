@@ -10,6 +10,7 @@ namespace Yanz.Controllers
     {
         public IActionResult Index()
         {
+            var a = 1;
             return View();
         }
     }
