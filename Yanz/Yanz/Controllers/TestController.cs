@@ -12,5 +12,10 @@ namespace Yanz.Controllers
         {
             return View();
         }
+        
+        public IActionResult Set()
+        {
+            return View();
+        }
     }
 }

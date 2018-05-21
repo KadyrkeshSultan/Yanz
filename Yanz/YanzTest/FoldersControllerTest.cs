@@ -11,9 +11,6 @@ namespace YanzTest
 {
     public class FoldersControllerTest
     {
-        UserManager<ApplicationUser> userManager;
-        ApplicationDbContext db;
-
         [Fact]
         public void GetTestWithNull()
         {

@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewData["Title"] = "Set";
+}
+
+<h2>Set</h2>
+
+<p>
+    <label>Title</label><br />
+    <input id="title" type="text" name="Title" />
+    <br />
+    <label>FolderId</label><br />
+    <input id="folderId" name="FolderId" />
+</p>
+<button class="btn" onclick="createSet()">Create</button>
+<br />
+<p>
+    <label>Set Id</label><br />
+    <input id="rid" type="text" name="rId" />
+    <br />
+    <label>Title</label><br />
+    <input id="rtitle" type="text" name="rTitle" />
+    <br />
+    <label>FolderId</label><br />
+    <input id="rfolderId" name="rFolderId" />
+</p>
+<button class="btn" onclick="renameSet()">Rename</button>
+<br />
+<p>
+    <label>Set Id</label><br />
+    <input id="mid" type="text" name="mId" />
+    <br />
+    <label>Title</label><br />
+    <input id="mtitle" type="text" name="mTitle" />
+    <br />
+    <label>FolderId</label><br />
+    <input id="mfolderId" name="mFolderId" />
+</p>
+<button class="btn" onclick="moveSet()">Move</button>
+<br />
+<p>
+    <label>Set Id</label><br />
+    <input id="did" type="text" name="dId" />
+    <br />
+</p>
+<button class="btn" onclick="deleteSet()">Delete</button>
+
+<script>
+    function createSet() {
+        var title = $("#title").val();
+        var folderId = $("#folderId").val();
+        var set = { Title: title, FolderId: folderId };
+        $.ajax({
+            url: '/api/questionsets/',
+            type: 'POST',
+            data: JSON.stringify(set),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Create Question Set');
+            }
+        });
+    }
+    function renameSet() {
+        var title = $("#rtitle").val();
+        var folderId = $("#rfolderId").val();
+        var id = $("#rid").val();
+        var set = { Title: title, FolderId: folderId };
+        $.ajax({
+            url: '/api/questionsets/' + id,
+            type: 'PATCH',
+            data: JSON.stringify(set),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Rename Question Set');
+            }
+        });
+    }
+    function moveSet() {
+        var title = $("#rtitle").val();
+        var folderId = $("#rfolderId").val();
+        var id = $("#mid").val();
+        var set = { Title: title, FolderId: folderId };
+        $.ajax({
+            url: '/api/questionsets/' + id,
+            type: 'PATCH',
+            data: JSON.stringify(set),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Move Question Set');
+            }
+        });
+    }
+    function deleteSet() {
+        var id = $("#did").val();
+        $.ajax({
+            url: '/api/questionsets/' + id,
+            type: 'DELETE',
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Delete Question Set');
+            }
+        });
+    }
+</script>

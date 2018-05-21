@@ -84,6 +84,8 @@ namespace Yanz.Controllers.API
 
             var userId = userManager.GetUserId(User);
             var parentId = (await db.GetFolderAsync(userId, folder.ParentId))?.Id;
+            if (folder.ParentId != "root" && parentId == null)
+                return BadRequest($"Not found folder {folder.ParentId}");
 
             var nFolder = new Folder(folder.Title, userId, parentId);
             await db.AddAsync(nFolder);

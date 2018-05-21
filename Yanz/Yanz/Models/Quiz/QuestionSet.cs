@@ -1,4 +1,6 @@
-﻿namespace Yanz.Models.Quiz
+﻿using System;
+
+namespace Yanz.Models.Quiz
 {
     public class QuestionSet
     {
@@ -19,5 +21,20 @@
         public string FolderId { get; set; }
         public System.Collections.Generic.List<Question> Questions { get; set; }
         #endregion
+
+        public QuestionSet()
+        {
+
+        }
+
+        public QuestionSet(ApplicationUser user, string title, System.DateTime created, string folderId)
+        {
+            Id = Guid.NewGuid().ToString();
+            ApplicationUser = user;
+            Title = title;
+            FolderId = folderId;
+            Created = created;
+            Questions = new System.Collections.Generic.List<Question>();
+        }
     }
 }
