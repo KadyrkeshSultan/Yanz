@@ -26,6 +26,22 @@ namespace Yanz.Controllers.API
             userManager = _userManager;
         }
 
+        // GET: api/Images
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Get()
+        {
+            var userId = userManager.GetUserId(User);
+            var sets = db.QuestionSets
+                .Include(q => q.ApplicationUser)
+                .Include(q => q.Questions)
+                .Where(q => q.ApplicationUserId == userId).ToList();
+            List<QuestionSetView> views = new List<QuestionSetView>();
+            foreach (var set in sets)
+                views.Add(new QuestionSetView(set, await GetBreadcrumbsAsync(set.Id)));
+            return Ok(views);
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> Get(string Id)
