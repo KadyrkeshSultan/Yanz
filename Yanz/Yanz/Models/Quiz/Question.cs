@@ -1,4 +1,7 @@
-﻿namespace Yanz.Models.Quiz
+﻿using System;
+using System.Collections.Generic;
+
+namespace Yanz.Models.Quiz
 {
     public class Question
     {
@@ -54,13 +57,35 @@
         public QuestionSet QuestionSet { get; set; }
         public string QuestionSetId { get; set; }
 
-        public Session Session { get; set; }
-        public string SessionId { get; set; }
-
         /// <summary>
         /// Варианты ответа
         /// </summary>
         public System.Collections.Generic.List<Choice> Choices { get; set; }
         #endregion
+
+        public Question()
+        {
+                
+        }
+        public Question(QuestionView view)
+        {
+            Id = Guid.NewGuid().ToString();
+            Title = view.Title;
+            Image = view.Image;
+            IsPoll = false;
+            IsTrueCorrect = view.IsTrueCorrect;
+            Weight = view.Weight;
+            Created = DateTime.Now;
+            Modified = DateTime.Now;
+            Kind = view.Kind;
+            Content = view.Content;
+            Explanation = view.Explanation;
+            QuestionSetId = view.QuestionSetId;
+        }
+        public Question(QuestionView view, List<Choice> choices)
+            :this(view)
+        {
+            Choices = choices;
+        }
     }
 }

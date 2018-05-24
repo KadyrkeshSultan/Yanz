@@ -1,4 +1,6 @@
-﻿namespace Yanz.Models.Quiz
+﻿using System;
+
+namespace Yanz.Models.Quiz
 {
     public class Choice
     {
@@ -25,5 +27,20 @@
         public Question Question { get; set; }
         public string QuestionId { get; set; }
         #endregion
+
+        public Choice()
+        {
+
+        }
+
+        public Choice(ChoiceView view, string questionId)
+        {
+            Id = Guid.NewGuid().ToString();
+            Image = view.Image;
+            Order = view.Order;
+            IsCorrect = view.IsCorrect;
+            Content = view.Content;
+            QuestionId = questionId;
+        }
     }
 }

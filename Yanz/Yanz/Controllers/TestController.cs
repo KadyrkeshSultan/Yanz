@@ -17,5 +17,10 @@ namespace Yanz.Controllers
         {
             return View();
         }
+
+        public IActionResult Qst()
+        {
+            return View();
+        }
     }
 }

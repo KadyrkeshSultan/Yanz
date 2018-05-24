@@ -29,6 +29,14 @@ namespace Yanz.Data
                 .HasOne(q => q.Folder)
                 .WithMany(f => f.QuestionSets)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Question>()
+                .HasOne(q => q.QuestionSet)
+                .WithMany(s => s.Questions)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Choice>()
+                .HasOne(c => c.Question)
+                .WithMany(q => q.Choices)
+                .OnDelete(DeleteBehavior.Cascade);
             //builder.Ignore<Item>();
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

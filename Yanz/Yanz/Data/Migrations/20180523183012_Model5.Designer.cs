@@ -11,9 +11,10 @@ using Yanz.Data;
 namespace Yanz.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180523183012_Model5")]
+    partial class Model5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,6 +245,8 @@ namespace Yanz.Data.Migrations
 
                     b.Property<string>("QuestionSetId");
 
+                    b.Property<string>("SessionId");
+
                     b.Property<string>("Title");
 
                     b.Property<int>("Weight");
@@ -251,6 +254,8 @@ namespace Yanz.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionSetId");
+
+                    b.HasIndex("SessionId");
 
                     b.ToTable("Questions");
                 });
@@ -379,6 +384,10 @@ namespace Yanz.Data.Migrations
                         .WithMany("Questions")
                         .HasForeignKey("QuestionSetId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Yanz.Models.Quiz.Session")
+                        .WithMany("Questions")
+                        .HasForeignKey("SessionId");
                 });
 
             modelBuilder.Entity("Yanz.Models.Quiz.QuestionSet", b =>

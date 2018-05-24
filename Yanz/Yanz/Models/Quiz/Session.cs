@@ -54,7 +54,8 @@
         /// </summary>
         public string Title { get; set; }
 
-        public System.Collections.Generic.List<Question> Questions { get; set; }
+        //TODO : заменить
+        //public System.Collections.Generic.List<Question> Questions { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
         public string ApplicationUserId { get; set; }
