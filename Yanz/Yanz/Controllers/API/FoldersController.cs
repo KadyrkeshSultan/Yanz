@@ -82,8 +82,8 @@ namespace Yanz.Controllers.API
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userId = userManager.GetUserId(User);
-            var parentId = (await db.GetFolderAsync(userId, folder.ParentId))?.Id;
+            string userId = userManager.GetUserId(User);
+            string parentId = (await db.GetFolderAsync(userId, folder.ParentId))?.Id;
             if (folder.ParentId != "root" && parentId == null)
                 return BadRequest($"Not found folder {folder.ParentId}");
 
@@ -99,8 +99,8 @@ namespace Yanz.Controllers.API
         [Authorize]
         public async Task<IActionResult> Delete(string Id)
         {
-            var userId = userManager.GetUserId(User);
-            var onDelete = await db.RemoveAsync(userId, Id);
+            string userId = userManager.GetUserId(User);
+            bool onDelete = await db.RemoveAsync(userId, Id);
             if (!onDelete)
                 return BadRequest(Id);
             await db.SaveAsync();
@@ -114,7 +114,7 @@ namespace Yanz.Controllers.API
         /// <returns></returns>
         private async Task<List<Item>> GetItemsAsync(string folderId)
         {
-            var userId = userManager.GetUserId(User);
+            string userId = userManager.GetUserId(User);
             var items = new List<Item>();
             var listFolders = (await db.GetFoldersAsync(userId))
                 .Where(f => f.ParentId == folderId)
@@ -142,7 +142,7 @@ namespace Yanz.Controllers.API
             if (folderId == null)
                 return new List<Breadcrumb>();
 
-            var userId = userManager.GetUserId(User);
+            string userId = userManager.GetUserId(User);
             var breadcrumbs = new List<Breadcrumb>();
             Folder folder = await db.GetFolderAsync(userId, folderId);
             Folder parentFolder = await db.GetFolderAsync(userId, folder.ParentId);

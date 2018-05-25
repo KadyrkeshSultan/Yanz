@@ -46,17 +46,9 @@ namespace Yanz.Controllers.API
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (kinds.FirstOrDefault(k => k == question.Kind) == null)
-                return BadRequest($"Kind {question.Kind} not exist");
-
-            if (question.Choices == null || question.Choices?.Count < 2 && question.Kind != "text")
-                return BadRequest("Min choices 2 if kind not text");
-
-            if (question.Kind == "choice" && question.Choices.Count(c => c.IsCorrect == true) != 1)
-                return BadRequest("Kind choice only one isCorrect");
-
-            if (question.Kind == "multiple" && question.Choices.Count(c => c.IsCorrect == true) < 1)
-                return BadRequest("Kind multiple min one isCorrect");
+            string checkKind = CheckKind(question);
+            if (!string.IsNullOrEmpty(checkKind))
+                return BadRequest(checkKind);
 
             if (await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == question.QuestionSetId) == null)
                 return NotFound(question.QuestionSetId);
@@ -70,7 +62,7 @@ namespace Yanz.Controllers.API
             db.Questions.Add(qst);
             await db.SaveChangesAsync();
             QuestionView view = new QuestionView(qst);
-            //TODO: проверка kind, сделать Pacth, удаление choices, копию в sessionChoice
+            //TODO: сделать Pacth, копию в sessionChoice
             return Ok(view);
         }
 
@@ -85,17 +77,9 @@ namespace Yanz.Controllers.API
             if (quest == null)
                 return NotFound();
 
-            if (kinds.FirstOrDefault(k => k == question.Kind) == null)
-                return BadRequest($"Kind {question.Kind} not exist");
-
-            if (question.Choices == null || question.Choices?.Count < 2 && question.Kind != "text")
-                return BadRequest("Min choices 2 if kind not text");
-
-            if (question.Kind == "choice" && question.Choices.Count(c => c.IsCorrect == true) != 1)
-                return BadRequest("Kind choice only one isCorrect");
-
-            if (question.Kind == "multiple" && question.Choices.Count(c => c.IsCorrect == true) < 1)
-                return BadRequest("Kind multiple min one isCorrect");
+            string checkKind = CheckKind(question);
+            if (!string.IsNullOrEmpty(checkKind))
+                return BadRequest(checkKind);
 
             if (await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == question.QuestionSetId) == null)
                 return NotFound(question.QuestionSetId);
@@ -118,6 +102,27 @@ namespace Yanz.Controllers.API
             return Ok(view);
         }
         
+        private string CheckKind(QuestionView question)
+        {
+            if (kinds.FirstOrDefault(k => k == question.Kind) == null)
+                return $"Kind {question.Kind} does not exist";
+
+            if (question.Choices == null || question.Choices?.Count < 2 && question.Kind != "text")
+                return "At least two choices, if this is not text";
+
+            if (question.Kind == "choice" && question.Choices.Count(c => c.IsCorrect == true) != 1)
+                return "For the Kind choice, there must be only one isCorrect";
+
+            if (question.Kind == "multiple" && question.Choices.Count(c => c.IsCorrect == true) < 1)
+                return "For the Kind multiple, at least one isCorrect";
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Обновляем все свойства кроме Id
+        /// </summary>
+        /// <param name="old">То что нужно обновить</param>
+        /// <param name="newQ">На то что нужно обновить</param>
         private void UpdateQst(Question old, Question newQ)
         {
             old.Choices = newQ.Choices;
