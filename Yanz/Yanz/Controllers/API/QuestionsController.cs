@@ -32,7 +32,7 @@ namespace Yanz.Controllers.API
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
-            var qst = await db.Questions.Include(q => q.Choices).FirstOrDefaultAsync(q => q.Id == id);
+            var qst = await db.Questions.AsNoTracking().Include(q => q.Choices).FirstOrDefaultAsync(q => q.Id == id);
             if (qst == null)
                 return NotFound();
             QuestionView view = new QuestionView(qst);
