@@ -20,6 +20,11 @@ namespace Yanz.Models.Quiz
         [StringLength(100,MinimumLength =1, ErrorMessage ="Min length 1")]
         public string Title { get; set; }
 
+        /// <summary>
+        /// Превью
+        /// </summary>
+        public string Image { get; set; }
+
         [Required]
         public string FolderId { get; set; }
         public System.Collections.Generic.List<Breadcrumb> Breadcrumbs { get; set; }
@@ -42,6 +47,7 @@ namespace Yanz.Models.Quiz
                 Created = set.Created;
                 Questions = GetQuestionViews(set.Questions);
                 FolderId = set.FolderId;
+                Image = set.Image;
             }
         }
 

@@ -35,7 +35,7 @@ namespace Yanz.Controllers.API
             var sets = db.QuestionSets
                 .Include(q => q.ApplicationUser)
                 .Include(q => q.Questions)
-                .Where(q => q.ApplicationUserId == userId).ToList();
+                .Where(q => q.ApplicationUserId == userId).OrderBy(o => o.Title).ToList();
             List<QuestionSetView> views = new List<QuestionSetView>();
             foreach (var set in sets)
                 views.Add(new QuestionSetView(set, await GetBreadcrumbsAsync(set.Id)));
@@ -68,7 +68,7 @@ namespace Yanz.Controllers.API
 
             set.FolderId = folderId;
 
-            QuestionSet questionSet = new QuestionSet(user, set.Title, DateTime.Now, set.FolderId);
+            QuestionSet questionSet = new QuestionSet(user, set.Title, DateTime.Now, set.FolderId, set.Image);
             await db.QuestionSets.AddAsync(questionSet);
             await db.SaveChangesAsync();
             QuestionSetView view = new QuestionSetView(questionSet, await GetBreadcrumbsAsync(questionSet.Id));
@@ -92,8 +92,10 @@ namespace Yanz.Controllers.API
             Folder folder = await db.Folders.FirstOrDefaultAsync(f => f.Id == set.FolderId);
             if (set.FolderId != "root" && folder == null)
                 return BadRequest($"Not found folder {set.FolderId}");
-            questionSet.FolderId = folder?.Id;
-            questionSet.Title = set.Title;
+
+            //Опасная зона
+            set.FolderId = folder?.Id;
+            questionSet.Update(set);
 
             db.QuestionSets.Update(questionSet);
             await db.SaveChangesAsync();
@@ -101,7 +103,7 @@ namespace Yanz.Controllers.API
             QuestionSetView view = new QuestionSetView(questionSet, await GetBreadcrumbsAsync(questionSet.Id));
             return Ok(view);
         }
-
+        
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(string Id)

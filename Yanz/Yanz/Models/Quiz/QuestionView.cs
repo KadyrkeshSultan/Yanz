@@ -53,8 +53,9 @@ namespace Yanz.Models.Quiz
                 Weight = qst.Weight;
                 IsPoll = qst.IsPoll;
                 Choices = new List<ChoiceView>();
-                foreach (var c in qst.Choices)
-                    Choices.Add(new ChoiceView(c));
+                if (qst.Choices != null)
+                    foreach (var c in qst.Choices)
+                        Choices.Add(new ChoiceView(c));
             }
         }
     }

@@ -13,6 +13,10 @@ namespace Yanz.Models.Quiz
 
         public string Title { get; set; }
 
+        /// <summary>
+        /// Превью
+        /// </summary>
+        public string Image { get; set; }
 
         #region Связи
         public string ApplicationUserId { get; set; }
@@ -27,14 +31,22 @@ namespace Yanz.Models.Quiz
 
         }
 
-        public QuestionSet(ApplicationUser user, string title, System.DateTime created, string folderId)
+        public QuestionSet(ApplicationUser user, string title, System.DateTime created, string folderId, string image)
         {
             Id = Guid.NewGuid().ToString();
             ApplicationUser = user;
             Title = title;
             FolderId = folderId;
             Created = created;
+            Image = image;
             Questions = new System.Collections.Generic.List<Question>();
+        }
+
+        public void Update(QuestionSetView nSet)
+        {
+            this.FolderId = nSet.FolderId;
+            this.Title = nSet.Title;
+            this.Image = nSet.Image;
         }
     }
 }
