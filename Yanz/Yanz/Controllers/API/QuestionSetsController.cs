@@ -33,10 +33,11 @@ namespace Yanz.Controllers.API
         {
             var userId = userManager.GetUserId(User);
             var sets = db.QuestionSets
+                .AsNoTracking()
                 .Include(q => q.ApplicationUser)
                 .Include(q => q.Questions)
                 .Where(q => q.ApplicationUserId == userId)
-                .OrderBy(o => o.Title).AsNoTracking();
+                .OrderBy(o => o.Title);
             List<QuestionSetView> views = new List<QuestionSetView>();
             foreach (var set in sets)
                 views.Add(new QuestionSetView(set, await GetBreadcrumbsAsync(set.Id)));
@@ -48,9 +49,9 @@ namespace Yanz.Controllers.API
         public async Task<IActionResult> Get(string Id)
         {
             QuestionSet set = await db.QuestionSets
+                .AsNoTracking()
                 .Include(q => q.ApplicationUser)
                 .Include(q => q.Questions)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(q => q.Id == Id);
             if (set == null)
                 return NotFound(Id);
