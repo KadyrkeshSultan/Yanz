@@ -81,6 +81,44 @@ namespace Yanz.Controllers.API
             return Ok(view);
         }
 
+        [HttpPost("{id}/associate")]
+        [Authorize]
+        public async Task<IActionResult> Associate(string id, string[] qsts)
+        {
+            var set = await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == id);
+            if (set == null)
+                return NotFound(id);
+            List<Question> questions = new List<Question>();
+            foreach (var quest in qsts)
+            {
+                var q = await db.Questions.FirstOrDefaultAsync(c => c.Id == quest);
+                if (q == null)
+                    return BadRequest(quest);
+                q.QuestionSetId = set.Id;
+                questions.Add(q);
+            }
+            
+            db.Questions.UpdateRange(questions);
+            await db.SaveChangesAsync();
+            return Ok(qsts);
+        }
+        //TODO : доделать
+        //[HttpPost("{id}/reorder")]
+        //[Authorize]
+        //public async Task<IActionResult> Reorder(string id, string[] qsts)
+        //{
+        //    var set = await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == id);
+        //    if (set == null)
+        //        return NotFound(id);
+        //    foreach (var quest in qsts)
+        //    {
+        //        var q = await db.Questions.FirstOrDefaultAsync(c => c.Id == quest);
+        //        if (q == null)
+        //            return BadRequest(quest);
+        //        questions.Add(q);
+        //    }
+        //}
+
         [HttpPatch("{id}")]
         [Authorize]
         public async Task<IActionResult> Patch(string Id, [FromBody]QuestionSetView set)

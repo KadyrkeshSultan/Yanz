@@ -53,8 +53,11 @@ namespace Yanz.Controllers.API
             if (!string.IsNullOrEmpty(checkKind))
                 return BadRequest(checkKind);
 
-            if (await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == question.QuestionSetId) == null)
+            var set = await db.QuestionSets.Include(s => s.Questions).FirstOrDefaultAsync(q => q.Id == question.QuestionSetId);
+            if (set == null)
                 return NotFound(question.QuestionSetId);
+            if (set.Questions.Count >= 30)
+                return BadRequest("Max 30 questions in set");
 
             List<Choice> choices = new List<Choice>();
             if (question.Kind != "text")
@@ -84,9 +87,11 @@ namespace Yanz.Controllers.API
             if (!string.IsNullOrEmpty(checkKind))
                 return BadRequest(checkKind);
 
-            if (await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == question.QuestionSetId) == null)
+            var set = await db.QuestionSets.Include(d => d.Questions).FirstOrDefaultAsync(q => q.Id == question.QuestionSetId);
+            if (set == null)
                 return NotFound(question.QuestionSetId);
-
+            if (set.Questions.Count >= 30 && quest.QuestionSetId != question.QuestionSetId)
+                return BadRequest("Max 30 questions in set");
             db.Choices.RemoveRange(quest.Choices);
 
             List<Choice> choices = new List<Choice>();
