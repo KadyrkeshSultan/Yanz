@@ -38,6 +38,7 @@ namespace Yanz.Controllers.API
                 .FirstOrDefaultAsync(q => q.Id == id);
             if (qst == null)
                 return NotFound();
+            qst.Choices = qst.Choices.OrderBy(c => c.Order).ToList();
             QuestionView view = new QuestionView(qst);
             return Ok(view);
         }
@@ -64,6 +65,7 @@ namespace Yanz.Controllers.API
                 foreach (var c in question.Choices.OrderBy(q => q.Order))
                     choices.Add(new Choice(c, question.QuestionSetId));
 
+            question.Order = set.Questions.Count;
             Question qst = new Question(question, choices);
             db.Questions.Add(qst);
             await db.SaveChangesAsync();

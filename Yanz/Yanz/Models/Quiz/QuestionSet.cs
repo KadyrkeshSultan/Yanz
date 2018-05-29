@@ -12,6 +12,7 @@ namespace Yanz.Models.Quiz
         public System.DateTime Created { get; set; }
 
         public string Title { get; set; }
+        public string Desc { get; set; }
 
         /// <summary>
         /// Превью
@@ -31,11 +32,12 @@ namespace Yanz.Models.Quiz
 
         }
 
-        public QuestionSet(ApplicationUser user, string title, System.DateTime created, string folderId, string image)
+        public QuestionSet(ApplicationUser user, string title, System.DateTime created, string folderId, string image, string desc)
         {
             Id = Guid.NewGuid().ToString();
             ApplicationUser = user;
             Title = title;
+            Desc = desc;
             FolderId = folderId;
             Created = created;
             Image = image;
@@ -47,6 +49,7 @@ namespace Yanz.Models.Quiz
             this.FolderId = nSet.FolderId;
             this.Title = nSet.Title;
             this.Image = nSet.Image;
+            this.Desc = nSet.Desc;
         }
     }
 }

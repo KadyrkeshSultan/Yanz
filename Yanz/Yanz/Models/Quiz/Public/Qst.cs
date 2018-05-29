@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Yanz.Models.Quiz
+﻿namespace Yanz.Models.Quiz.Public
 {
-    public class Question
+    /// <summary>
+    /// Public Question
+    /// </summary>
+    public class Qst
     {
         public string Id { get; set; }
 
@@ -17,11 +17,6 @@ namespace Yanz.Models.Quiz
         /// Ссылка на изображение
         /// </summary>
         public string Image { get; set; }
-
-        /// <summary>
-        /// Для голосования
-        /// </summary>
-        public bool IsPoll { get; set; }
 
         /// <summary>
         /// Правда является правильной? Для True/False
@@ -51,44 +46,21 @@ namespace Yanz.Models.Quiz
         /// Пояснение, можно HTML
         /// </summary>
         public string Explanation { get; set; }
-
-        public int Order { get; set; }
         #endregion
 
         #region Связи
-        public QuestionSet QuestionSet { get; set; }
-        public string QuestionSetId { get; set; }
+        public Set Set { get; set; }
+        public string SetId { get; set; }
 
         /// <summary>
         /// Варианты ответа
         /// </summary>
-        public System.Collections.Generic.List<Choice> Choices { get; set; }
+        public System.Collections.Generic.List<Chc> Chcs { get; set; }
         #endregion
 
-        public Question()
+        public Qst()
         {
-                
-        }
-        public Question(QuestionView view)
-        {
-            Id = Guid.NewGuid().ToString();
-            Title = view.Title;
-            Image = view.Image;
-            IsPoll = false;
-            IsTrueCorrect = view.IsTrueCorrect;
-            Weight = view.Weight;
-            Created = DateTime.Now;
-            Modified = DateTime.Now;
-            Kind = view.Kind;
-            Content = view.Content;
-            Explanation = view.Explanation;
-            QuestionSetId = view.QuestionSetId;
-            Order = view.Order;
-        }
-        public Question(QuestionView view, List<Choice> choices)
-            :this(view)
-        {
-            Choices = choices;
+
         }
     }
 }

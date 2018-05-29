@@ -55,6 +55,7 @@ namespace Yanz.Controllers.API
                 .FirstOrDefaultAsync(q => q.Id == Id);
             if (set == null)
                 return NotFound(Id);
+            set.Questions = set.Questions.OrderBy(q => q.Order).ToList();
             QuestionSetView view = new QuestionSetView(set, await GetBreadcrumbsAsync(Id));
             return Ok(view);
         }
@@ -74,7 +75,7 @@ namespace Yanz.Controllers.API
 
             set.FolderId = folderId;
 
-            QuestionSet questionSet = new QuestionSet(user, set.Title, DateTime.Now, set.FolderId, set.Image);
+            QuestionSet questionSet = new QuestionSet(user, set.Title, DateTime.Now, set.FolderId, set.Image, set.Desc);
             await db.QuestionSets.AddAsync(questionSet);
             await db.SaveChangesAsync();
             QuestionSetView view = new QuestionSetView(questionSet, await GetBreadcrumbsAsync(questionSet.Id));
@@ -102,22 +103,30 @@ namespace Yanz.Controllers.API
             await db.SaveChangesAsync();
             return Ok(qsts);
         }
-        //TODO : доделать
-        //[HttpPost("{id}/reorder")]
-        //[Authorize]
-        //public async Task<IActionResult> Reorder(string id, string[] qsts)
-        //{
-        //    var set = await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == id);
-        //    if (set == null)
-        //        return NotFound(id);
-        //    foreach (var quest in qsts)
-        //    {
-        //        var q = await db.Questions.FirstOrDefaultAsync(c => c.Id == quest);
-        //        if (q == null)
-        //            return BadRequest(quest);
-        //        questions.Add(q);
-        //    }
-        //}
+        
+        [HttpPost("{id}/reorder")]
+        [Authorize]
+        public async Task<IActionResult> Reorder(string id, string[] qsts)
+        {
+            var set = await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == id);
+            if (set == null)
+                return NotFound(id);
+
+            List<Question> questions = new List<Question>();
+            int order = 0;
+            foreach (var quest in qsts)
+            {
+                var q = await db.Questions.FirstOrDefaultAsync(c => c.Id == quest);
+                if (q == null)
+                    return BadRequest(quest);
+                q.Order = order;
+                questions.Add(q);
+                order++;
+            }
+            db.Questions.UpdateRange(questions);
+            await db.SaveChangesAsync();
+            return Ok(qsts);
+        }
 
         [HttpPatch("{id}")]
         [Authorize]

@@ -17,9 +17,12 @@ namespace Yanz.Models.Quiz
         /// </summary>
         public string Owner { get; set; }
 
+        [Required]
         [StringLength(100,MinimumLength =1, ErrorMessage ="Min length 1")]
         public string Title { get; set; }
 
+        [Required]
+        public string Desc { get; set; }
         /// <summary>
         /// Превью
         /// </summary>
@@ -44,6 +47,7 @@ namespace Yanz.Models.Quiz
                 Id = set.Id;
                 Owner = set.ApplicationUser.Email;
                 Title = set.Title;
+                Desc = set.Desc;
                 Created = set.Created;
                 Questions = GetQuestionViews(set.Questions);
                 FolderId = set.FolderId;

@@ -5,6 +5,11 @@
     <UserSecretsId>aspnet-Yanz-3831399A-A619-4CDA-93CA-86EAA327D690</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20180529211335_Model8.cs" />
+    <Compile Remove="Data\Migrations\20180529211335_Model8.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />

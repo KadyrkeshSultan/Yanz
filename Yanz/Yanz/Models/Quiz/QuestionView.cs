@@ -28,6 +28,7 @@ namespace Yanz.Models.Quiz
         //public string OnBoardingId { get; set; }
         public int Weight { get; set; }
         public bool IsPoll { get; set; }
+        public int Order { get; set; }
 
         public List<ChoiceView> Choices { get; set; }
 
@@ -52,6 +53,7 @@ namespace Yanz.Models.Quiz
                 IsTrueCorrect = qst.IsTrueCorrect;
                 Weight = qst.Weight;
                 IsPoll = qst.IsPoll;
+                Order = qst.Order;
                 Choices = new List<ChoiceView>();
                 if (qst.Choices != null)
                     foreach (var c in qst.Choices)

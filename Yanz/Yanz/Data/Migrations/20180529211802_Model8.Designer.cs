@@ -11,9 +11,10 @@ using Yanz.Data;
 namespace Yanz.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180529211802_Model8")]
+    partial class Model8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,8 +242,6 @@ namespace Yanz.Data.Migrations
                     b.Property<string>("Kind");
 
                     b.Property<DateTime>("Modified");
-
-                    b.Property<int>("Order");
 
                     b.Property<string>("QuestionSetId");
 
