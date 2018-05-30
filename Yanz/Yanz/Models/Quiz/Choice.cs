@@ -28,6 +28,20 @@ namespace Yanz.Models.Quiz
         public string QuestionId { get; set; }
         #endregion
 
+        public Choice GetCopy(string questionId)
+        {
+            Choice c = new Choice()
+            {
+                Content = this.Content,
+                Id = Guid.NewGuid().ToString(),
+                Image = this.Image,
+                Order = this.Order,
+                IsCorrect = this.IsCorrect,
+                QuestionId = questionId
+            };
+            return c;
+        }
+
         public Choice()
         {
 

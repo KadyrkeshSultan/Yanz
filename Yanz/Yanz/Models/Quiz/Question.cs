@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Yanz.Models.Quiz.Public;
 
 namespace Yanz.Models.Quiz
 {
@@ -59,11 +60,34 @@ namespace Yanz.Models.Quiz
         public QuestionSet QuestionSet { get; set; }
         public string QuestionSetId { get; set; }
 
+        public Set Set { get; set; }
+        public string SetId { get; set; }
         /// <summary>
         /// Варианты ответа
         /// </summary>
         public System.Collections.Generic.List<Choice> Choices { get; set; }
         #endregion
+
+        public Question GetForPublicSetCopy(string setId)
+        {
+            Question qst = new Question()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Content = this.Content,
+                Order = this.Order,
+                Created = DateTime.Now,
+                Explanation = this.Explanation,
+                Image = this.Image,
+                IsPoll = this.IsPoll,
+                IsTrueCorrect = this.IsTrueCorrect,
+                Kind = this.Kind,
+                Modified = DateTime.Now,
+                Title = this.Title,
+                Weight = this.Weight,
+                SetId = setId
+            };
+            return qst;
+        }
 
         public Question()
         {

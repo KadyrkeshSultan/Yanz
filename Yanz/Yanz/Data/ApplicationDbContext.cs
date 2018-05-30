@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Yanz.Models;
 using Yanz.Models.Quiz;
+using Yanz.Models.Quiz.Public;
 
 namespace Yanz.Data
 {
@@ -16,6 +17,8 @@ namespace Yanz.Data
         public DbSet<QuestionSet> QuestionSets { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Choice> Choices { get; set; }
+        public DbSet<Yanz.Models.Quiz.Public.Set> Sets { get; set; }
+        public DbSet<ModerMsg> ModerMsgs { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -36,6 +39,10 @@ namespace Yanz.Data
             builder.Entity<Choice>()
                 .HasOne(c => c.Question)
                 .WithMany(q => q.Choices)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Question>()
+                .HasOne(q => q.Set)
+                .WithMany(s => s.Questions)
                 .OnDelete(DeleteBehavior.Cascade);
             //builder.Ignore<Item>();
             // Customize the ASP.NET Identity model and override the defaults if needed.

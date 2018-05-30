@@ -1,4 +1,6 @@
-﻿namespace Yanz.Models.Quiz.Public
+﻿using System;
+
+namespace Yanz.Models.Quiz.Public
 {
     /// <summary>
     /// Public QuestionSet
@@ -24,12 +26,21 @@
         #region Связи
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
-        public System.Collections.Generic.List<Qst> Qsts { get; set; }
+        public System.Collections.Generic.List<Question> Questions { get; set; }
         #endregion
 
         public Set()
         {
 
+        }
+
+        public Set(QuestionSet set)
+        {
+            Id = Guid.NewGuid().ToString();
+            Created = DateTime.Now;
+            Desc = set.Desc;
+            Image = set.Image;
+            ApplicationUserId = set.ApplicationUserId;
         }
     }
 }

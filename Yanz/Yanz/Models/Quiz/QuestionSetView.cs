@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Yanz.Models.Quiz
 {
@@ -64,7 +65,7 @@ namespace Yanz.Models.Quiz
         private List<QuestionView> GetQuestionViews(List<Question> questions)
         {
             var listQuestionView = new List<QuestionView>();
-            foreach (var qst in questions)
+            foreach (var qst in questions.OrderBy(q => q.Order))
                 listQuestionView.Add(new QuestionView(qst));
             return listQuestionView;
         }

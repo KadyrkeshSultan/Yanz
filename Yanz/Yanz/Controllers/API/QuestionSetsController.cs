@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Yanz.Data;
 using Yanz.Models;
 using Yanz.Models.Quiz;
+using Yanz.Models.Quiz.Public;
 
 namespace Yanz.Controllers.API
 {
@@ -55,7 +56,7 @@ namespace Yanz.Controllers.API
                 .FirstOrDefaultAsync(q => q.Id == Id);
             if (set == null)
                 return NotFound(Id);
-            set.Questions = set.Questions.OrderBy(q => q.Order).ToList();
+            //set.Questions = set.Questions.OrderBy(q => q.Order).ToList();
             QuestionSetView view = new QuestionSetView(set, await GetBreadcrumbsAsync(Id));
             return Ok(view);
         }
@@ -126,6 +127,37 @@ namespace Yanz.Controllers.API
             db.Questions.UpdateRange(questions);
             await db.SaveChangesAsync();
             return Ok(qsts);
+        }
+
+        [HttpPost("{id}/publish")]
+        [Authorize]
+        public async Task<IActionResult> Publish(string id)
+        {
+            var set = await db.QuestionSets.FirstOrDefaultAsync(q => q.Id == id);
+            if (set == null)
+                return NotFound(id);
+            string userId = userManager.GetUserId(User);
+            var msg = await db.ModerMsgs.FirstOrDefaultAsync(m => m.QuestionSetId == id);
+            if(msg == null)
+            {
+                ModerMsg m = new ModerMsg()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Create = DateTime.Now,
+                    Status = Status.Moderation,
+                    ApplicationUserId = userId,
+                    QuestionSetId = id
+                };
+                db.ModerMsgs.Add(m);
+                await db.SaveChangesAsync();
+                return Ok(m);
+            }
+            if (msg?.Status == Status.Moderation)
+                return BadRequest($"{id} on moderation");
+            msg.Status = Status.Moderation;
+            db.ModerMsgs.Update(msg);
+            await db.SaveChangesAsync();
+            return Ok(msg);
         }
 
         [HttpPatch("{id}")]
