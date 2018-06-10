@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Identity\Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Yanz.DAL\Yanz.DAL.csproj" />
   </ItemGroup>
 
