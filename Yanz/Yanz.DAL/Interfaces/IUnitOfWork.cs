@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Yanz.DAL.Entities;
 
 namespace Yanz.DAL.Interfaces
@@ -13,5 +14,6 @@ namespace Yanz.DAL.Interfaces
         IRepository<ModerMsg> ModerMsgs { get; }
 
         void Save();
+        Task SaveAsync();
     }
 }
