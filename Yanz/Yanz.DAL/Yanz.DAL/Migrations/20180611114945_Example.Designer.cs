@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yanz.DAL.EF;
 
-namespace YanzWeb.Migrations
+namespace Yanz.DAL.Yanz.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20180610212056_InitWeb")]
-    partial class InitWeb
+    [Migration("20180611114945_Example")]
+    partial class Example
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

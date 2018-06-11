@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace YanzWeb.Migrations
+namespace Yanz.DAL.Yanz.DAL.Migrations
 {
-    public partial class InitWeb : Migration
+    public partial class Example : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

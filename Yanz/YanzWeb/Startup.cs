@@ -37,7 +37,7 @@ namespace YanzWeb
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("YanzWeb")));
+                    Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Yanz.DAL")));
             services.AddDefaultIdentity<AppUser>(opts =>
             {
                 opts.Password.RequiredLength = 6;
