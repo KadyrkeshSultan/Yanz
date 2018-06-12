@@ -12,6 +12,7 @@ namespace Yanz.DAL.EF
         public DbSet<Choice> Choices { get; set; }
         public DbSet<ModerMsg> ModerMsgs { get; set; }
         public DbSet<Set> Sets { get; set; }
+        public DbSet<Session> Sessions { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             :base(options)

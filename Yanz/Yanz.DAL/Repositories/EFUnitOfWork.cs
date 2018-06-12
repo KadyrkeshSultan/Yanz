@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Yanz.DAL.EF;
 using Yanz.DAL.Entities;
@@ -22,7 +20,7 @@ namespace Yanz.DAL.Repositories
 
         public IRepository<Choice> Choices => throw new NotImplementedException();
 
-        public IRepository<Question> Questions
+        public QuestionRepository Questions
         {
             get
             {
@@ -32,7 +30,7 @@ namespace Yanz.DAL.Repositories
             }
         }
 
-        public IRepository<Folder> Folders
+        public FolderRepository Folders
         {
             get
             {
