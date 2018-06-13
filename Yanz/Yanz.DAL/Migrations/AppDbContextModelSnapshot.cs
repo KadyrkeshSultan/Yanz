@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yanz.DAL.EF;
 
-namespace Yanz.DAL.Yanz.DAL.Migrations
+namespace Yanz.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20180611114945_Example")]
-    partial class Example
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,11 +85,9 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                    b.Property<string>("LoginProvider");
 
-                    b.Property<string>("ProviderKey")
-                        .HasMaxLength(128);
+                    b.Property<string>("ProviderKey");
 
                     b.Property<string>("ProviderDisplayName");
 
@@ -122,11 +118,9 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                 {
                     b.Property<string>("UserId");
 
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                    b.Property<string>("LoginProvider");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(128);
+                    b.Property<string>("Name");
 
                     b.Property<string>("Value");
 
@@ -316,6 +310,42 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                     b.ToTable("QuestionSets");
                 });
 
+            modelBuilder.Entity("Yanz.DAL.Entities.Session", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AppUserId");
+
+                    b.Property<string>("Code");
+
+                    b.Property<string>("FeedbackMode");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<bool>("IsArchived");
+
+                    b.Property<bool>("IsOneAttempt");
+
+                    b.Property<bool>("IsPartialGrading");
+
+                    b.Property<bool>("IsRevealed");
+
+                    b.Property<bool>("IsShuffleChoices");
+
+                    b.Property<string>("Mode");
+
+                    b.Property<string>("PlatformOnly");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Sessions");
+                });
+
             modelBuilder.Entity("Yanz.DAL.Entities.Set", b =>
                 {
                     b.Property<string>("Id")
@@ -434,6 +464,13 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                         .WithMany("QuestionSets")
                         .HasForeignKey("FolderId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Yanz.DAL.Entities.Session", b =>
+                {
+                    b.HasOne("Yanz.DAL.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("Yanz.DAL.Entities.Set", b =>

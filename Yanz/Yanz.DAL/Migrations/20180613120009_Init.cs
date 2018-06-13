@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Yanz.DAL.Yanz.DAL.Migrations
+namespace Yanz.DAL.Migrations
 {
-    public partial class Example : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -93,8 +93,8 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -138,8 +138,8 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -167,6 +167,35 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                     table.PrimaryKey("PK_Folders", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Folders_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sessions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Code = table.Column<string>(nullable: true),
+                    FeedbackMode = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false),
+                    IsArchived = table.Column<bool>(nullable: false),
+                    IsOneAttempt = table.Column<bool>(nullable: false),
+                    IsPartialGrading = table.Column<bool>(nullable: false),
+                    IsRevealed = table.Column<bool>(nullable: false),
+                    IsShuffleChoices = table.Column<bool>(nullable: false),
+                    Mode = table.Column<string>(nullable: true),
+                    PlatformOnly = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    AppUserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sessions_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -391,6 +420,11 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
                 column: "FolderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sessions_AppUserId",
+                table: "Sessions",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sets_AppUserId",
                 table: "Sets",
                 column: "AppUserId");
@@ -418,6 +452,9 @@ namespace Yanz.DAL.Yanz.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "ModerMsgs");
+
+            migrationBuilder.DropTable(
+                name: "Sessions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
