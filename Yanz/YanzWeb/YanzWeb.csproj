@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yanz.BLL\Yanz.BLL.csproj" />
     <ProjectReference Include="..\Yanz.DAL\Yanz.DAL.csproj" />
   </ItemGroup>
 

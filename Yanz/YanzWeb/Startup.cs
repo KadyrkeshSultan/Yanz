@@ -13,6 +13,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Yanz.DAL.EF;
 using Yanz.DAL.Entities;
+using Yanz.DAL.Interfaces;
+using Yanz.DAL.Repositories;
+using Yanz.BLL.Interfaces;
+using Yanz.BLL.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace YanzWeb
 {
@@ -47,7 +54,36 @@ namespace YanzWeb
                 opts.Password.RequireDigit = true; // требуются ли цифры
             })
                 .AddEntityFrameworkStores<AppDbContext>();
+            
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCookie()
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            // укзывает, будет ли валидироваться издатель при валидации токена
+                            ValidateIssuer = true,
+                            // строка, представляющая издателя
+                            ValidIssuer = AuthOptions.ISSUER,
 
+                            // будет ли валидироваться потребитель токена
+                            ValidateAudience = true,
+                            // установка потребителя токена
+                            ValidAudience = AuthOptions.AUDIENCE,
+                            // будет ли валидироваться время существования
+                            ValidateLifetime = true,
+
+                            // установка ключа безопасности
+                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                            // валидация ключа безопасности
+                            ValidateIssuerSigningKey = true,
+                        };
+                    });
+
+            services.AddScoped<IRepository<Folder>, FolderRepository>();
+            services.AddScoped<IUnitOfWork, EFUnitOfWork>();
+            services.AddScoped<IFolderService, FolderService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

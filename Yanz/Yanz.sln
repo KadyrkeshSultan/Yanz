@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YanzTest", "YanzTest\YanzTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YanzWeb", "YanzWeb\YanzWeb.csproj", "{D6B84034-9DC5-4BCE-B035-A27A43190059}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yanz.DAL", "Yanz.DAL\Yanz.DAL.csproj", "{7BE138CE-E444-4274-A829-228DCC3D968C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yanz.DAL", "Yanz.DAL\Yanz.DAL.csproj", "{7BE138CE-E444-4274-A829-228DCC3D968C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yanz.BLL", "Yanz.BLL\Yanz.BLL.csproj", "{2607834C-3009-46CB-82F0-B43FCF3F442D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7BE138CE-E444-4274-A829-228DCC3D968C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BE138CE-E444-4274-A829-228DCC3D968C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BE138CE-E444-4274-A829-228DCC3D968C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2607834C-3009-46CB-82F0-B43FCF3F442D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2607834C-3009-46CB-82F0-B43FCF3F442D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2607834C-3009-46CB-82F0-B43FCF3F442D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2607834C-3009-46CB-82F0-B43FCF3F442D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

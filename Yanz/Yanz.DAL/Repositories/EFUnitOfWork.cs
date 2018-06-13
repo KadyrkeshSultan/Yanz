@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using Yanz.DAL.EF;
-using Yanz.DAL.Entities;
 using Yanz.DAL.Interfaces;
 
 namespace Yanz.DAL.Repositories
@@ -12,13 +11,25 @@ namespace Yanz.DAL.Repositories
         private AppDbContext db;
         private FolderRepository folderRepository;
         private QuestionRepository questionRepository;
+        private ChoiceRepository choiceRepository;
+        private QuestionSetRepository questionSetRepository;
+        private SetRepository setRepository;
+        private ModerMsgRepository moderMsgRepository;
 
         public EFUnitOfWork(DbContextOptions<AppDbContext> options)
         {
             db = new AppDbContext(options);
         }
 
-        public IRepository<Choice> Choices => throw new NotImplementedException();
+        public ChoiceRepository Choices
+        {
+            get
+            {
+                if (choiceRepository == null)
+                    choiceRepository = new ChoiceRepository(db);
+                return choiceRepository;
+            }
+        }
 
         public QuestionRepository Questions
         {
@@ -40,11 +51,35 @@ namespace Yanz.DAL.Repositories
             }
         }
 
-        public IRepository<QuestionSet> QuestionSets => throw new NotImplementedException();
+        public QuestionSetRepository QuestionSets
+        {
+            get
+            {
+                if (questionSetRepository == null)
+                    questionSetRepository = new QuestionSetRepository(db);
+                return questionSetRepository;
+            }
+        }
 
-        public IRepository<Set> Sets => throw new NotImplementedException();
+        public SetRepository Sets
+        {
+            get
+            {
+                if (setRepository == null)
+                    setRepository = new SetRepository(db);
+                return setRepository;
+            }
+        }
 
-        public IRepository<ModerMsg> ModerMsgs => throw new NotImplementedException();
+        public ModerMsgRepository ModerMsgs
+        {
+            get
+            {
+                if (moderMsgRepository == null)
+                    moderMsgRepository = new ModerMsgRepository(db);
+                return moderMsgRepository;
+            }
+        }
 
         public void Save() => db.SaveChanges();
 
