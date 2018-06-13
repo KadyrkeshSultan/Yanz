@@ -34,6 +34,12 @@ namespace YanzWeb.Controllers
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user != null)
                 {
+                    // проверяем, подтвержден ли email
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, "You not confirmed your email");
+                        return BadRequest();
+                    }
 
                     var result = await _signInManager.CheckPasswordSignInAsync
                                     (user, password, lockoutOnFailure: false);
