@@ -94,7 +94,7 @@ namespace Yanz.BLL.Services
         {
             if (userId == null)
                 throw new ValidationException("UserId is null", "");
-            var folders = Unit.Folders.GetAll(userId);
+            var folders = Unit.Folders.GetAllByUser(userId);
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Folder, FolderDTO>()).CreateMapper();
             return mapper.Map<IEnumerable<Folder>, List<FolderDTO>>(folders);
         }
@@ -103,7 +103,7 @@ namespace Yanz.BLL.Services
         {
             if (userId == null)
                 throw new ValidationException("UserId is null", "");
-            var folders = await Unit.Folders.GetAllAsync(userId);
+            var folders = await Unit.Folders.GetAllByUserAsync(userId);
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Folder, FolderDTO>()).CreateMapper();
             return mapper.Map<IEnumerable<Folder>, List<FolderDTO>>(folders);
         }

@@ -53,6 +53,7 @@ namespace YanzWeb
                 opts.Password.RequireUppercase = false; // требуются ли символы в верхнем регистре
                 opts.Password.RequireDigit = true; // требуются ли цифры
             })
+            .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
