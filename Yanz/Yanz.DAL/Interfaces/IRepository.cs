@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Yanz.DAL.Interfaces
 {
@@ -6,9 +7,17 @@ namespace Yanz.DAL.Interfaces
     {
         T Get(string id);
         Task<T> GetAsync(string id);
+
         void Add(T item);
+        void AddRange(IEnumerable<T> entities);
+
         Task AddAsync(T item);
+        Task AddRangeAsync(IEnumerable<T> entities);
+
         void Update(T item);
+        void UpdateRange(IEnumerable<T> entities);
+
         void Delete(T item);
+        void DeleteRange(IEnumerable<T> entities);
     }
 }

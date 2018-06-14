@@ -81,7 +81,7 @@ namespace YanzWeb
                         };
                     });
 
-            services.AddScoped<IRepository<Folder>, FolderRepository>();
+            //services.AddScoped<IRepository<Folder>, FolderRepository>();
             services.AddScoped<IUnitOfWork, EFUnitOfWork>();
             services.AddScoped<IFolderService, FolderService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
