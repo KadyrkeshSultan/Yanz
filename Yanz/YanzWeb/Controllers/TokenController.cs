@@ -48,12 +48,11 @@ namespace YanzWeb.Controllers
                     {
                         return Unauthorized();
                     }
+                    List<Claim> claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id) };
 
-                    var claims = new[]
-                    {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+                    var role = await _userManager.GetRolesAsync(user);
+                    if (role.Count > 0)
+                        claims.Add(new Claim(ClaimTypes.Role, role.First()));
 
                     var token = new JwtSecurityToken
                     (
